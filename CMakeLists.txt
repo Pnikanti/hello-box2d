@@ -5,6 +5,7 @@ set(SOURCES
 	 ${PROJECT_SOURCE_DIR}/src/context.cpp
 	 ${PROJECT_SOURCE_DIR}/src/app.cpp
 	 ${PROJECT_SOURCE_DIR}/src/log.cpp
+	 ${PROJECT_SOURCE_DIR}/src/gui.cpp
 )
 
 set(IMGUI_SOURCES
