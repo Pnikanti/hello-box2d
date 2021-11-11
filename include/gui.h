@@ -1,6 +1,5 @@
 #pragma once
-
-struct ImGuiContext;
+#include <imgui.h>
 
 namespace OpenGL {
 	class Gui {
@@ -12,13 +11,27 @@ namespace OpenGL {
 	private:
 		ImGuiContext* Context;
 	};
+
 	class GuiContext {
 	public:
 		virtual void Update();
 	};
 
-	class GameGui : public GuiContext {
+	class DebugGuiContext : public GuiContext {
 	public:
+		DebugGuiContext();
 		void Update() override;
+	public:
+		ImGuiWindowFlags wFlags;
+		bool visible;
+	};
+
+	class ApplicationGuiContext : public GuiContext {
+	public:
+		ApplicationGuiContext();
+		void Update() override;
+	public:
+		ImGuiWindowFlags wFlags;
+		bool visible;
 	};
 }

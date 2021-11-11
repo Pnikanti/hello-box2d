@@ -10,8 +10,8 @@ public:
 	void Start();
 	void Loop();
 public:
-	static OpenGL::Gui* Gui;
-	static OpenGL::GuiContext* GuiContext;
+	static OpenGL::GuiContext* DebugGuiContext;
+	static OpenGL::GuiContext* ApplicationGuiContext;
 private:
 	OpenGL::Context* Context;
 };

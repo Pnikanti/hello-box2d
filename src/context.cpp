@@ -4,11 +4,25 @@
 #include "app.h"
 #include "log.h"
 
+void* operator new(size_t size)
+{
+	OpenGL::Context::AllocatedMemory += size;
+	return malloc(size);
+}
+
+void operator delete(void* memory, size_t size)
+{
+	OpenGL::Context::FreedMemory += size;
+	free(memory);
+}
 
 namespace OpenGL {
-	GLFWwindow* Context::Window = nullptr;
+	unsigned int Context::AllocatedMemory = 0;
+	unsigned int Context::FreedMemory = 0;
 	unsigned int Context::SCR_WIDTH = 800;
 	unsigned int Context::SCR_HEIGHT = 600;
+	GLFWwindow* Context::Window = nullptr;
+	Gui* Context::GuiContext = nullptr;
 
 	Context::Context(int width, int height, const char* windowName)
 		: Alive(1)
@@ -39,6 +53,7 @@ namespace OpenGL {
 
 		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 		glfwSwapInterval(1); // Enable vsync
+		GuiContext = new Gui();
 		LOGGER_INFO("Context initialized!");
 	}
 
@@ -60,9 +75,10 @@ namespace OpenGL {
 		Alive = !glfwWindowShouldClose(Window);
 		glClear(GL_COLOR_BUFFER_BIT);
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		Application::Gui->Begin();
-		Application::GuiContext->Update();
-		Application::Gui->End();
+		GuiContext->Begin();
+		Application::ApplicationGuiContext->Update();
+		Application::DebugGuiContext->Update();
+		GuiContext->End();
 		glfwSwapBuffers(Window);
 		glfwPollEvents();
 	}

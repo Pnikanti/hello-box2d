@@ -3,16 +3,15 @@
 #include "log.h"
 #include <glew/glew.h>
 #include <glfw/glfw3.h>
-#include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
 namespace OpenGL {
-	Gui::Gui() {
+	Gui::Gui() 
+		: Context(ImGui::CreateContext())
+	{
 		IMGUI_CHECKVERSION();
-		Context = ImGui::CreateContext();
 		ImGui::SetCurrentContext(Context);
-
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
@@ -20,12 +19,6 @@ namespace OpenGL {
 		ImGui::StyleColorsDark();
 		ImGui_ImplGlfw_InitForOpenGL(Context::Window, true);
 		ImGui_ImplOpenGL3_Init((char*)glGetString(GL_NUM_SHADING_LANGUAGE_VERSIONS));
-
-		// ImGui settings
-		ImGuiWindowFlags windowFlags = 0;
-		windowFlags |= ImGuiWindowFlags_NoBackground;
-		windowFlags |= ImGuiWindowFlags_NoTitleBar;
-		LOGGER_TRACE("WindowFlags: {0}", windowFlags);
 	}
 
 	Gui::~Gui() {
@@ -47,9 +40,41 @@ namespace OpenGL {
 
 	void GuiContext::Update() {}
 
-	void GameGui::Update() {
-		ImGui::Begin("Hello World!");
+	DebugGuiContext::DebugGuiContext() : wFlags(0), visible(true)
+	{
+		wFlags |= ImGuiWindowFlags_NoBackground;
+		wFlags |= ImGuiWindowFlags_NoTitleBar;
+		wFlags |= ImGuiWindowFlags_NoResize;
+		wFlags |= ImGuiWindowFlags_NoMove;
+		LOGGER_TRACE("WindowFlags: {0}", wFlags);
+	}
+
+	ApplicationGuiContext::ApplicationGuiContext() : wFlags(0), visible(true)
+	{
+		wFlags |= ImGuiWindowFlags_NoBackground;
+		wFlags |= ImGuiWindowFlags_NoTitleBar;
+		wFlags |= ImGuiWindowFlags_NoResize;
+		wFlags |= ImGuiWindowFlags_NoMove;
+		LOGGER_TRACE("WindowFlags: {0}", wFlags);
+	}
+
+	void DebugGuiContext::Update() {
+		ImGui::SetNextWindowPos(ImVec2(0, 0)); // top-left
+		ImGui::SetNextWindowSize(ImVec2(800, 200));
+		ImGui::Begin("Debug", &visible, wFlags);
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		ImGui::Text("Total Allocated (bytes): %u", Context::AllocatedMemory);
+		ImGui::Text("Freed (bytes): %u", Context::FreedMemory);
+		ImGui::Text("Current (bytes): %u", Context::AllocatedMemory - Context::FreedMemory);
+		ImGui::End();
+	}
+
+	void ApplicationGuiContext::Update() {
+		ImGui::SetNextWindowPos(ImVec2(Context::SCR_WIDTH - 100, 200)); // top-right
+		ImGui::SetNextWindowSize(ImVec2(100, 200));
+		ImGui::Begin("Application", &visible, wFlags);
+		ImGui::Button("Spawn Box", ImVec2(75, 50));
+		ImGui::Button("Delete Box", ImVec2(75, 50));
 		ImGui::End();
 	}
 }

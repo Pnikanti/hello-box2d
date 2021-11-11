@@ -1,16 +1,16 @@
 #include "app.h"
 #include "log.h"
 
-OpenGL::Gui* Application::Gui = nullptr;
-OpenGL::GuiContext* Application::GuiContext = nullptr;
+OpenGL::GuiContext* Application::DebugGuiContext = nullptr;
+OpenGL::GuiContext* Application::ApplicationGuiContext = nullptr;
 
 Application::Application() :
 	Context(nullptr)
 {
 	Logger::Init("Hello-Box2D");
 	Context = new OpenGL::Context(800, 600, "Application");
-	Gui = new OpenGL::Gui();
-	GuiContext = new OpenGL::GameGui();
+	DebugGuiContext = new OpenGL::DebugGuiContext();
+	ApplicationGuiContext = new OpenGL::ApplicationGuiContext();
 }
 
 Application::~Application()
@@ -26,7 +26,7 @@ void Application::Start()
 void Application::Loop()
 {
 	while (Context->Alive)
-	{;
+	{
 		Context->RenderOneFrame();
 	}
 }
