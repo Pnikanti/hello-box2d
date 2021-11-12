@@ -1,8 +1,12 @@
 #include <glew/glew.h>
 #include <glfw/glfw3.h>
+#include <glm/gtx/string_cast.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include "context.h"
+#include "camera.h"
 #include "app.h"
 #include "log.h"
+#include "shader.h"
 
 void* operator new(size_t size)
 {
@@ -23,6 +27,7 @@ namespace OpenGL {
 	unsigned int Context::SCR_HEIGHT = 600;
 	GLFWwindow* Context::Window = nullptr;
 	Gui* Context::GuiContext = nullptr;
+	std::unordered_map<std::string, unsigned int> Context::Shaders = std::unordered_map<std::string, unsigned int>();
 
 	Context::Context(int width, int height, const char* windowName)
 		: Alive(1)
@@ -70,15 +75,71 @@ namespace OpenGL {
 		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 	}
 
+	void Context::RenderGui()
+	{
+		GuiContext->Begin();
+		for (auto i : Application::GuiContexts)
+		{
+			if (i != nullptr)
+			{
+				i->Update();
+			}
+		}
+		GuiContext->End();
+	}
+
+	void Context::AddShader(std::string& shaderName, std::string& vertexShader, std::string& fragmentShader)
+	{
+		LOGGER_INFO("Using shaders: {0}, {1}", vertexShader, fragmentShader);
+		ShaderHandler::ShaderProgramSource source = ShaderHandler::Parse(vertexShader, fragmentShader);
+		Shaders[shaderName] = ShaderHandler::Create(source.VertexSource, source.FragmentSource);
+	}
+
+	void Context::UpdateUniformResolution()
+	{
+		glm::vec2 resolution = glm::vec2(SCR_WIDTH, SCR_HEIGHT);
+
+		for (auto i : Shaders)
+		{
+			glUseProgram(i.second);
+			unsigned int resolutionUniform = glGetUniformLocation(i.second, "resolution");
+			if (resolutionUniform)
+			{
+				LOGGER_TRACE("Setting resolution: {0} to resolutionUniform", glm::to_string(resolution));
+				glUniform2fv(resolutionUniform, 1, glm::value_ptr(resolution));
+			}
+		}
+	}
+
+	void Context::UpdateViewProjectionMatrix(OrthographicCamera* camera)
+	{
+		LOGGER_TRACE("Updating viewProjectionmatrix: {0}", glm::to_string(camera->viewProjectionMatrix));
+		viewProjectionMatrix = camera->viewProjectionMatrix;
+
+		for (auto i : Shaders)
+		{
+			glUseProgram(i.second);
+			unsigned int viewProjectionUniform = glGetUniformLocation(i.second, "viewProjection");
+			glUniformMatrix4fv(viewProjectionUniform, 1, GL_FALSE, glm::value_ptr(viewProjectionMatrix));
+		}
+	}
+
+	void Context::UpdateAllRenderTargets()
+	{
+		//for (auto i : Game::gameObjects)
+		//{
+		//	if (i != nullptr) {
+		//		i->Draw();
+		//	}
+		//}
+	}
+
 	void Context::RenderOneFrame()
 	{
 		Alive = !glfwWindowShouldClose(Window);
 		glClear(GL_COLOR_BUFFER_BIT);
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		GuiContext->Begin();
-		Application::ApplicationGuiContext->Update();
-		Application::DebugGuiContext->Update();
-		GuiContext->End();
+		RenderGui();
 		glfwSwapBuffers(Window);
 		glfwPollEvents();
 	}
