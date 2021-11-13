@@ -38,6 +38,7 @@ Application::~Application()
 
 void Application::Start()
 {
+	CreateBox();
 	Loop();
 }
 

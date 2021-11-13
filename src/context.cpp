@@ -7,6 +7,7 @@
 #include "app.h"
 #include "log.h"
 #include "shader.h"
+#include "entity.h"
 
 void* operator new(size_t size)
 {
@@ -126,12 +127,12 @@ namespace OpenGL {
 
 	void Context::UpdateAllRenderTargets()
 	{
-		//for (auto i : Game::gameObjects)
-		//{
-		//	if (i != nullptr) {
-		//		i->Draw();
-		//	}
-		//}
+		for (auto i : Application::Entities)
+		{
+			if (i != nullptr) {
+				i->Draw();
+			}
+		}
 	}
 
 	void Context::RenderOneFrame()
@@ -140,6 +141,7 @@ namespace OpenGL {
 		glClear(GL_COLOR_BUFFER_BIT);
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		RenderGui();
+		UpdateAllRenderTargets();
 		glfwSwapBuffers(Window);
 		glfwPollEvents();
 	}
