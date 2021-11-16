@@ -5,6 +5,7 @@
 
 class Entity;
 class OrthographicCamera;
+class PhysicsWorld;
 
 class Application {
 public:
@@ -15,13 +16,15 @@ public:
 	void CreateDebugGui();
 	void CreateApplicationGui();
 	void CreateBox();
+	void CreateGround();
 public:
 	static std::vector<Entity*> Entities;
 	static std::vector<OpenGL::GuiContext*> GuiContexts;
-	static float MS_PER_UPDATE;
+	static float TimeStep;
 private:
 	OpenGL::Context* Context;
 	OrthographicCamera* Camera;
+	PhysicsWorld* Physics;
 private:
 	OrthographicCamera* CreateCamera(float width, float height);
 };

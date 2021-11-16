@@ -73,8 +73,14 @@ namespace OpenGL {
 		ImGui::SetNextWindowPos(ImVec2(Context::SCR_WIDTH - 100, 200)); // top-right
 		ImGui::SetNextWindowSize(ImVec2(100, 200));
 		ImGui::Begin("Application", &visible, wFlags);
-		ImGui::Button("Spawn Box", ImVec2(75, 50));
-		ImGui::Button("Delete Box", ImVec2(75, 50));
+		if (ImGui::Button("Spawn Box", ImVec2(75, 50)))
+		{
+			LOGGER_WARN("SPAWN PRESSED!");
+		}
+		if (ImGui::Button("Delete Box", ImVec2(75, 50)))
+		{
+			LOGGER_WARN("DELETE PRESSED!");
+		}
 		ImGui::End();
 	}
 }

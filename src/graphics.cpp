@@ -26,18 +26,19 @@ namespace OpenGL
 
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 		glEnableVertexAttribArray(0);
+		shader = Context::Shaders["BasicShader"];
 
 	}
 
 	void QuadComponent::Draw(Entity& entity)
 	{
 		glm::vec2 position = glm::vec2(1.0f);
-
-		unsigned int shader = Context::Shaders["BasicShader"];
+		
 		glUseProgram(shader);
 
-		glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(glm::vec2(1.0f), 0.0f))
-		* glm::scale(glm::mat4(1.0f), glm::vec3(glm::vec2(1.0f), 1.0f));
+		glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(entity.GetPosition(), 0.0f))
+			* glm::rotate(glm::mat4(1.0f), entity.GetRotationRadians(), {0.0f, 0.0f, 1.0f })
+			* glm::scale(glm::mat4(1.0f), glm::vec3(entity.GetSize(), 1.0f));
 
 		unsigned int modelUniform = glGetUniformLocation(shader, "model");
 		glUniformMatrix4fv(modelUniform, 1, GL_FALSE, glm::value_ptr(model));

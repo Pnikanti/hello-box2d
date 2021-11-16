@@ -33,5 +33,6 @@ namespace OpenGL
 		unsigned int vertexArray;
 		unsigned int vertexBuffer;
 		unsigned int elementBuffer;
+		unsigned int shader;
 	};
 }

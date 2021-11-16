@@ -8,16 +8,14 @@ class PhysicsComponent;
 
 class Entity {
 public:
-	float speed;
-	std::string name;
-	glm::vec2 position;
-	glm::vec2 size;
-	glm::vec2 direction;
-public:
 	Entity(PhysicsComponent* physicsComponent, OpenGL::GraphicsComponent* graphicsComponent);
 	void Advance();
 	void Draw();
-	void UpdatePhysics();
+	glm::vec2 GetSize();
+	glm::vec2 GetPosition();
+	float GetRotationDegrees();
+	float GetRotationRadians();
+	void SetAttributes(glm::vec2 position, glm::vec2 size, float rotation);
 private:
 	InputComponent* input;
 	PhysicsComponent* physics;

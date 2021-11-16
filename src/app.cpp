@@ -9,7 +9,7 @@
 
 std::vector<Entity*> Application::Entities(std::vector<Entity*>(10));
 std::vector<OpenGL::GuiContext*> Application::GuiContexts(std::vector<OpenGL::GuiContext*>(2));
-float Application::MS_PER_UPDATE = 0.033; // 0.033 = 30x, 0.02 = 50x, 0.0166 = 60x per second
+float Application::TimeStep = 1.0f / 60.0f;
 
 Application::Application() :
 	Context(nullptr)
@@ -22,6 +22,7 @@ Application::Application() :
 	Camera = CreateCamera(800, 600);
 	Context->UpdateViewProjectionMatrix(Camera);
 	Context->UpdateUniformResolution();
+	Physics = new PhysicsWorld();
 }
 
 Application::~Application()
@@ -38,6 +39,7 @@ Application::~Application()
 
 void Application::Start()
 {
+	CreateGround();
 	CreateBox();
 	Loop();
 }
@@ -54,10 +56,17 @@ void Application::Loop()
 		previous = current;
 		lag += elapsed;
 
-		while (lag >= MS_PER_UPDATE)
+		while (lag >= TimeStep)
 		{
-			LOGGER_INFO("Advancing!");
-			lag -= MS_PER_UPDATE;
+			Physics->Update();
+			for (auto i : Entities)
+			{
+				if (i != nullptr)
+				{
+					i->Advance();
+				}
+			}
+			lag -= TimeStep;
 		}
 		Context->RenderOneFrame();
 	}
@@ -79,7 +88,7 @@ void Application::CreateApplicationGui()
 OrthographicCamera* Application::CreateCamera(float width, float height)
 {
 	float aspectRatio = width / height;
-	float cameraDimensions = 8.0f;
+	float cameraDimensions = 20.0f;
 	float bottom = -cameraDimensions;
 	float top = cameraDimensions;
 	float left = bottom * aspectRatio;
@@ -97,11 +106,21 @@ OrthographicCamera* Application::CreateCamera(float width, float height)
 void Application::CreateBox()
 {
 	Entity* e = new Entity(
-		new PhysicsComponent(),
+		new PhysicsDynamicComponent(),
 		new OpenGL::QuadComponent()
 	);
+	e->SetAttributes(glm::vec2(0.0f, 20.0f), glm::vec2(0.5f), 30.0f);
 	Entities.push_back(e);
-	
+}
+
+void Application::CreateGround()
+{
+	Entity* e = new Entity(
+		new PhysicsStaticComponent(),
+		new OpenGL::QuadComponent()
+	);
+	e->SetAttributes(glm::vec2(0.0f, -10.0f), glm::vec2(10.0f, 0.25f), 0.0f);
+	Entities.push_back(e);
 }
 
 int main()

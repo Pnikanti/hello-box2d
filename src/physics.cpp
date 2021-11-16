@@ -1,18 +1,120 @@
+#include <glm/gtx/string_cast.hpp>
 #include "physics.h"
 #include "entity.h"
+#include "app.h"
+#include "log.h"
 
-PhysicsComponent::PhysicsComponent()
-	: PhysicsWorld(nullptr)
+b2World* PhysicsWorld::World = nullptr;
+
+PhysicsWorld::PhysicsWorld() :
+	VelocityIterations(6), 
+	PositionIterations(2)
 {
-	//PhysicsWorld = new b2World({ 0.0f, -9.8f });
+	World = new b2World({ 0.0f, -9.8f });
 }
-PhysicsComponent::~PhysicsComponent()
+
+PhysicsWorld::~PhysicsWorld()
 {
-	//delete PhysicsWorld;
-	//PhysicsWorld = nullptr;
+	delete World;
+	World = nullptr;
 }
 
-void PhysicsComponent::Update(Entity& entity)
+void PhysicsWorld::Update()
 {
+	auto bodies = World->GetBodyCount();
+	LOGGER_TRACE("Updating \"{0}\" bodies!", bodies);
+	World->Step(Application::TimeStep, VelocityIterations, PositionIterations);
+}
 
+PhysicsComponent::PhysicsComponent() :
+	Position(glm::vec2(0.0f, 0.0f)),
+	Size(glm::vec2(1.0f, 1.0f)),
+	Rotation(0.0f),
+	Body(nullptr),
+	Fixture(nullptr),
+	BodyDefinition(),
+	Shape(),
+	FixtureDefinition() 
+{}
+
+void PhysicsComponent::CreateEntity(glm::vec2 position, glm::vec2 size, float rotation)
+{
+	if (Body != nullptr)
+	{
+		PhysicsWorld::World->DestroyBody(Body);
+		Body = nullptr;
+	}
+
+	Size = size;
+	Position = position;
+	Rotation = rotation; // must be passed as radians!
+
+	Shape.SetAsBox(Size.x, Size.y);
+	FixtureDefinition.shape = &Shape;
+	BodyDefinition.position.Set(Position.x, Position.y);
+
+	Body = PhysicsWorld::World->CreateBody(&BodyDefinition);
+	Body->SetTransform(Body->GetPosition(), Rotation);
+	Fixture = Body->CreateFixture(&FixtureDefinition);
+}
+
+glm::vec2 PhysicsComponent::GetPosition()
+{
+	return Position;
+}
+
+float PhysicsComponent::GetRotationRadians()
+{
+	return Rotation;
+}
+
+float PhysicsComponent::GetRotationDegrees()
+{
+	return glm::degrees(Rotation);
+}
+
+glm::vec2 PhysicsComponent::GetSize()
+{
+	return Size;
+}
+
+void PhysicsComponent::Update() {}
+
+PhysicsStaticComponent::PhysicsStaticComponent() : PhysicsComponent()
+{
+	//BodyDefinition.position.Set(Position.x, Position.y);
+	//Body = PhysicsWorld::World->CreateBody(&BodyDefinition);
+
+	//Shape.SetAsBox(Size.x, Size.y);
+	//FixtureDefinition.shape = &Shape;
+	FixtureDefinition.density = 0.0f;
+
+	//Fixture = Body->CreateFixture(&FixtureDefinition);
+}
+
+PhysicsStaticComponent::~PhysicsStaticComponent() {}
+
+PhysicsDynamicComponent::PhysicsDynamicComponent() : PhysicsComponent()
+{
+	BodyDefinition.type = b2_dynamicBody;
+	//BodyDefinition.position.Set(Position.x, Position.y);
+
+	//Body = PhysicsWorld::World->CreateBody(&BodyDefinition);
+	//Shape.SetAsBox(Size.x, Size.y);
+
+	//FixtureDefinition.shape = &Shape;
+	FixtureDefinition.density = 1.0f;
+	FixtureDefinition.friction = 0.2f;
+	FixtureDefinition.restitution = 0.3f;
+
+	//Fixture = Body->CreateFixture(&FixtureDefinition);
+}
+
+PhysicsDynamicComponent::~PhysicsDynamicComponent() {}
+
+void PhysicsDynamicComponent::Update()
+{
+	b2Vec2 position = Body->GetPosition();
+	Position = glm::vec2(position.x, position.y);
+	Rotation = Body->GetAngle();
 }
