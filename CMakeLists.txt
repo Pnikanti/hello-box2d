@@ -5,6 +5,7 @@ set(SOURCES
 	 ${PROJECT_SOURCE_DIR}/src/context.cpp
 	 ${PROJECT_SOURCE_DIR}/src/physics.cpp
 	 ${PROJECT_SOURCE_DIR}/src/graphics.cpp
+	 ${PROJECT_SOURCE_DIR}/src/entitymanager.cpp
 	 ${PROJECT_SOURCE_DIR}/src/entity.cpp
 	 ${PROJECT_SOURCE_DIR}/src/shader.cpp
 	 ${PROJECT_SOURCE_DIR}/src/camera.cpp

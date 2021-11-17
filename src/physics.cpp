@@ -82,14 +82,7 @@ void PhysicsComponent::Update() {}
 
 PhysicsStaticComponent::PhysicsStaticComponent() : PhysicsComponent()
 {
-	//BodyDefinition.position.Set(Position.x, Position.y);
-	//Body = PhysicsWorld::World->CreateBody(&BodyDefinition);
-
-	//Shape.SetAsBox(Size.x, Size.y);
-	//FixtureDefinition.shape = &Shape;
 	FixtureDefinition.density = 0.0f;
-
-	//Fixture = Body->CreateFixture(&FixtureDefinition);
 }
 
 PhysicsStaticComponent::~PhysicsStaticComponent() {}
@@ -97,17 +90,9 @@ PhysicsStaticComponent::~PhysicsStaticComponent() {}
 PhysicsDynamicComponent::PhysicsDynamicComponent() : PhysicsComponent()
 {
 	BodyDefinition.type = b2_dynamicBody;
-	//BodyDefinition.position.Set(Position.x, Position.y);
-
-	//Body = PhysicsWorld::World->CreateBody(&BodyDefinition);
-	//Shape.SetAsBox(Size.x, Size.y);
-
-	//FixtureDefinition.shape = &Shape;
 	FixtureDefinition.density = 1.0f;
 	FixtureDefinition.friction = 0.2f;
 	FixtureDefinition.restitution = 0.3f;
-
-	//Fixture = Body->CreateFixture(&FixtureDefinition);
 }
 
 PhysicsDynamicComponent::~PhysicsDynamicComponent() {}

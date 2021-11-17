@@ -3,8 +3,11 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 #include "gui.h"
+#include "entitymanager.h"
 #include "context.h"
 #include "log.h"
+#include "graphics.h"
+#include "physics.h"
 
 namespace OpenGL {
 	Gui::Gui() 
@@ -76,10 +79,18 @@ namespace OpenGL {
 		if (ImGui::Button("Spawn Box", ImVec2(75, 50)))
 		{
 			LOGGER_WARN("SPAWN PRESSED!");
+			EntityManager::Get().CreateEntity(
+				new PhysicsDynamicComponent(),
+				new OpenGL::QuadComponent(),
+				glm::vec2(0.5f, 0.5f),
+				glm::vec2(0.0f, 10.0f),
+				30.0f
+			);
 		}
 		if (ImGui::Button("Delete Box", ImVec2(75, 50)))
 		{
 			LOGGER_WARN("DELETE PRESSED!");
+			EntityManager::GetEntities().pop_back(); // memory leak
 		}
 		ImGui::End();
 	}

@@ -2,8 +2,8 @@
 #include <imgui.h>
 #include <unordered_map>
 #include <glm/glm.hpp>
-#include "gui.h"
 
+namespace OpenGL { class Gui; }
 struct GLFWwindow;
 class OrthographicCamera;
 

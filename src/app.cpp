@@ -1,13 +1,15 @@
 #include <glfw/glfw3.h>
 #include <string.h>
+#include "context.h"
+#include "gui.h"
 #include "app.h"
 #include "log.h"
 #include "camera.h"
 #include "graphics.h"
 #include "physics.h"
 #include "entity.h"
+#include "entitymanager.h"
 
-std::vector<Entity*> Application::Entities(std::vector<Entity*>(10));
 std::vector<OpenGL::GuiContext*> Application::GuiContexts(std::vector<OpenGL::GuiContext*>(2));
 float Application::TimeStep = 1.0f / 60.0f;
 
@@ -39,8 +41,22 @@ Application::~Application()
 
 void Application::Start()
 {
-	CreateGround();
-	CreateBox();
+	EntityManager::Get().CreateEntity(
+		new PhysicsStaticComponent(),
+		new OpenGL::QuadComponent(),
+		glm::vec2(10.0f, 0.25f),
+		glm::vec2(0.0f, -10.0f),
+		0.0f
+	);
+
+	EntityManager::Get().CreateEntity(
+		new PhysicsDynamicComponent(),
+		new OpenGL::QuadComponent(),
+		glm::vec2(0.5f, 0.5f),
+		glm::vec2(0.0f, 10.0f),
+		30.0f
+	);
+
 	Loop();
 }
 
@@ -59,12 +75,10 @@ void Application::Loop()
 		while (lag >= TimeStep)
 		{
 			Physics->Update();
-			for (auto i : Entities)
+			for (auto i : EntityManager::GetEntities())
 			{
-				if (i != nullptr)
-				{
-					i->Advance();
-				}
+				if (i.exists)
+					i.Advance();
 			}
 			lag -= TimeStep;
 		}
@@ -101,26 +115,6 @@ OrthographicCamera* Application::CreateCamera(float width, float height)
 	LOGGER_TRACE("right: {0}", right);
 
 	return new OrthographicCamera(left, right, bottom, top);
-}
-
-void Application::CreateBox()
-{
-	Entity* e = new Entity(
-		new PhysicsDynamicComponent(),
-		new OpenGL::QuadComponent()
-	);
-	e->SetAttributes(glm::vec2(0.0f, 20.0f), glm::vec2(0.5f), 30.0f);
-	Entities.push_back(e);
-}
-
-void Application::CreateGround()
-{
-	Entity* e = new Entity(
-		new PhysicsStaticComponent(),
-		new OpenGL::QuadComponent()
-	);
-	e->SetAttributes(glm::vec2(0.0f, -10.0f), glm::vec2(10.0f, 0.25f), 0.0f);
-	Entities.push_back(e);
 }
 
 int main()

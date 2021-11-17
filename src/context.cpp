@@ -3,11 +3,13 @@
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "context.h"
+#include "gui.h"
 #include "camera.h"
 #include "app.h"
 #include "log.h"
 #include "shader.h"
 #include "entity.h"
+#include "entitymanager.h"
 
 void* operator new(size_t size)
 {
@@ -127,11 +129,10 @@ namespace OpenGL {
 
 	void Context::UpdateAllRenderTargets()
 	{
-		for (auto i : Application::Entities)
+		for (auto i : EntityManager::GetEntities())
 		{
-			if (i != nullptr) {
-				i->Draw();
-			}
+			if (i.exists)
+				i.Draw();
 		}
 	}
 

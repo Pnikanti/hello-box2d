@@ -1,8 +1,7 @@
 #pragma once
 #include <vector>
-#include "context.h"
-#include "gui.h"
 
+namespace OpenGL { class GuiContext; class Context; }
 class Entity;
 class OrthographicCamera;
 class PhysicsWorld;
@@ -15,10 +14,7 @@ public:
 	void Loop();
 	void CreateDebugGui();
 	void CreateApplicationGui();
-	void CreateBox();
-	void CreateGround();
 public:
-	static std::vector<Entity*> Entities;
 	static std::vector<OpenGL::GuiContext*> GuiContexts;
 	static float TimeStep;
 private:

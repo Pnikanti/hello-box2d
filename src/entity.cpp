@@ -3,10 +3,12 @@
 #include "log.h"
 #include "physics.h"
 
+Entity::Entity() : input(nullptr), physics(nullptr), graphics(nullptr), exists(false) {}
 Entity::Entity(PhysicsComponent* physicsComponent, OpenGL::GraphicsComponent* graphicsComponent) :
 	input(nullptr),
 	graphics(graphicsComponent),
-	physics(physicsComponent)
+	physics(physicsComponent),
+	exists(true)
 {
 	physics->CreateEntity(glm::vec2(0.0f), glm::vec2(1.0f), 0.0f);
 }
