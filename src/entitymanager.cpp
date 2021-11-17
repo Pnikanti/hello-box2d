@@ -3,16 +3,14 @@
 #include "physics.h"
 #include "graphics.h"
 
-std::vector<Entity> EntityManager::Entities(std::vector<Entity>(10));
+std::vector<Entity*> EntityManager::Entities;
 
 void EntityManager::CreateEntity(PhysicsComponent* physics, OpenGL::GraphicsComponent* graphics)
 {
-	Entities.emplace_back(Entity(physics, graphics));
+	Entities.emplace_back(new Entity(physics, graphics));
 }
 
-void EntityManager::CreateEntity(PhysicsComponent* physics, OpenGL::GraphicsComponent* graphics, glm::vec2 size, glm::vec2 position, float rotation)
+void EntityManager::CreateEntity(PhysicsComponent* physics, OpenGL::GraphicsComponent* graphics, glm::vec2 position, glm::vec2 size, float rotation)
 {
-	Entity e = Entity(physics, graphics);
-	e.SetAttributes(position, size, rotation);
-	Entities.emplace_back(e);
+	Entities.emplace_back(new Entity(physics, graphics, position, size, rotation));
 }

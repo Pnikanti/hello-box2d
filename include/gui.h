@@ -1,5 +1,9 @@
 #pragma once
 #include <imgui.h>
+ 
+namespace OpenGL { class GraphicsComponent; }
+class PhysicsComponent;
+class Entity;
 
 namespace OpenGL {
 	class Gui {
@@ -32,6 +36,9 @@ namespace OpenGL {
 		void Update() override;
 	public:
 		ImGuiWindowFlags wFlags;
+		PhysicsComponent* x;
+		GraphicsComponent* y;
+		Entity* e;
 		bool visible;
 	};
 }

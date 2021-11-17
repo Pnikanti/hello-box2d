@@ -5,14 +5,15 @@
 #include "graphics.h"
 #include "context.h"
 #include "entity.h"
+#include "log.h"
 
 namespace OpenGL
 {
 	void GraphicsComponent::Draw(Entity& entity) {}
-
 	QuadComponent::QuadComponent()
 		: quad(Quad()), vertexArray(0), vertexBuffer(0), elementBuffer(0)
 	{
+		LOGGER_TRACE("QuadComponent constructor called");
 		glGenVertexArrays(1, &vertexArray);
 		glBindVertexArray(vertexArray);
 
@@ -27,7 +28,14 @@ namespace OpenGL
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 		glEnableVertexAttribArray(0);
 		shader = Context::Shaders["BasicShader"];
-
+	}
+	QuadComponent::~QuadComponent()
+	{
+		LOGGER_TRACE("QuadComponent destructor called");
+		glBindVertexArray(0);
+		glDeleteBuffers(1, &vertexBuffer);
+		glDeleteBuffers(1, &elementBuffer);
+		glDeleteVertexArrays(1, &vertexArray);
 	}
 
 	void QuadComponent::Draw(Entity& entity)

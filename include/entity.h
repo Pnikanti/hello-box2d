@@ -8,8 +8,9 @@ class PhysicsComponent;
 
 class Entity {
 public:
-	Entity();
 	Entity(PhysicsComponent* physicsComponent, OpenGL::GraphicsComponent* graphicsComponent);
+	Entity(PhysicsComponent* physicsComponent, OpenGL::GraphicsComponent* graphicsComponent, glm::vec2 position, glm::vec2 size, float rotation);
+	~Entity();
 	void Advance();
 	void Draw();
 	glm::vec2 GetSize();
@@ -17,8 +18,6 @@ public:
 	float GetRotationDegrees();
 	float GetRotationRadians();
 	void SetAttributes(glm::vec2 position, glm::vec2 size, float rotation);
-public:
-	bool exists;
 private:
 	InputComponent* input;
 	PhysicsComponent* physics;

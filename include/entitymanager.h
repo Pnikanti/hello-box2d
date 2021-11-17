@@ -16,9 +16,10 @@ public:
 		static EntityManager Instance; 
 		return Instance; 
 	}
-	static std::vector<Entity>& GetEntities() { return EntityManager::Get().Entities; }
+	static void Init(size_t size) { EntityManager::Get().Entities.reserve(size); }
+	static std::vector<Entity*>& GetEntities() { return EntityManager::Get().Entities; }
 protected:
 	EntityManager::EntityManager() = default; // constructor
 private:
-	static std::vector<Entity> Entities;
+	static std::vector<Entity*> Entities;
 };

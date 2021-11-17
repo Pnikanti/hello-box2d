@@ -20,13 +20,15 @@ namespace OpenGL
 	class GraphicsComponent
 	{
 	public:
+		virtual ~GraphicsComponent() = default;
 		virtual void Draw(Entity& entity);
 	};
 
 	class QuadComponent : public GraphicsComponent
 	{
 	public:
-		QuadComponent::QuadComponent();
+		QuadComponent();
+		~QuadComponent();
 		void Draw(Entity& entity) override;
 	private:
 		Quad quad;

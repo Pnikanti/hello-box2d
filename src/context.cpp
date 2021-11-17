@@ -131,8 +131,8 @@ namespace OpenGL {
 	{
 		for (auto i : EntityManager::GetEntities())
 		{
-			if (i.exists)
-				i.Draw();
+			if (i != nullptr)
+				i->Draw();
 		}
 	}
 

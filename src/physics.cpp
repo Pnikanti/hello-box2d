@@ -35,10 +35,13 @@ PhysicsComponent::PhysicsComponent() :
 	BodyDefinition(),
 	Shape(),
 	FixtureDefinition() 
-{}
+{
+	LOGGER_TRACE("PhysicsComponent constructor called");
+}
 
 void PhysicsComponent::CreateEntity(glm::vec2 position, glm::vec2 size, float rotation)
 {
+	LOGGER_TRACE("CreateEntity called");
 	if (Body != nullptr)
 	{
 		PhysicsWorld::World->DestroyBody(Body);
@@ -80,22 +83,44 @@ glm::vec2 PhysicsComponent::GetSize()
 
 void PhysicsComponent::Update() {}
 
-PhysicsStaticComponent::PhysicsStaticComponent() : PhysicsComponent()
+PhysicsStaticComponent::PhysicsStaticComponent()
 {
+	LOGGER_TRACE("PhysicsStaticComponent constructor called");
 	FixtureDefinition.density = 0.0f;
 }
 
-PhysicsStaticComponent::~PhysicsStaticComponent() {}
-
-PhysicsDynamicComponent::PhysicsDynamicComponent() : PhysicsComponent()
+PhysicsStaticComponent::~PhysicsStaticComponent()
 {
+	LOGGER_TRACE("PhysicsStaticComponent destructor called");
+	if (Body == nullptr)
+		return;
+
+	Body->DestroyFixture(Fixture);
+	PhysicsWorld::World->DestroyBody(Body);
+	Body = nullptr;
+	Fixture = nullptr;
+}
+
+PhysicsDynamicComponent::PhysicsDynamicComponent()
+{
+	LOGGER_TRACE("PhysicsDynamicComponent constructor called");
 	BodyDefinition.type = b2_dynamicBody;
 	FixtureDefinition.density = 1.0f;
 	FixtureDefinition.friction = 0.2f;
 	FixtureDefinition.restitution = 0.3f;
 }
 
-PhysicsDynamicComponent::~PhysicsDynamicComponent() {}
+PhysicsDynamicComponent::~PhysicsDynamicComponent()
+{
+	LOGGER_TRACE("PhysicsDynamicComponent destructor called");
+	if (Body == nullptr)
+		return;
+
+	Body->DestroyFixture(Fixture);
+	PhysicsWorld::World->DestroyBody(Body);
+	Body = nullptr;
+	Fixture = nullptr;
+}
 
 void PhysicsDynamicComponent::Update()
 {

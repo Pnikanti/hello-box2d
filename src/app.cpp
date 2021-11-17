@@ -17,6 +17,7 @@ Application::Application() :
 	Context(nullptr)
 {
 	Logger::Init("Hello-Box2D");
+	EntityManager::Init(20);
 	Context = new OpenGL::Context(800, 600, "Application");
 	CreateDebugGui();
 	CreateApplicationGui();
@@ -44,16 +45,16 @@ void Application::Start()
 	EntityManager::Get().CreateEntity(
 		new PhysicsStaticComponent(),
 		new OpenGL::QuadComponent(),
-		glm::vec2(10.0f, 0.25f),
 		glm::vec2(0.0f, -10.0f),
+		glm::vec2(10.0f, 0.25f),
 		0.0f
 	);
 
 	EntityManager::Get().CreateEntity(
 		new PhysicsDynamicComponent(),
 		new OpenGL::QuadComponent(),
-		glm::vec2(0.5f, 0.5f),
 		glm::vec2(0.0f, 10.0f),
+		glm::vec2(0.5f, 0.5f),
 		30.0f
 	);
 
@@ -77,8 +78,8 @@ void Application::Loop()
 			Physics->Update();
 			for (auto i : EntityManager::GetEntities())
 			{
-				if (i.exists)
-					i.Advance();
+				if (i != nullptr)
+					i->Advance();
 			}
 			lag -= TimeStep;
 		}

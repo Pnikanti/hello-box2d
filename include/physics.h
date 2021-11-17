@@ -22,6 +22,7 @@ private:
 class PhysicsComponent {
 public:
 	PhysicsComponent();
+	virtual ~PhysicsComponent() = default;
 	void CreateEntity(glm::vec2 position, glm::vec2 size, float rotation);
 	glm::vec2 GetPosition();
 	glm::vec2 GetSize();
