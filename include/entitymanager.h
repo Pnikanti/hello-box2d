@@ -1,7 +1,9 @@
 #pragma once
 
+#include <glm/glm.hpp>
 #include <memory>
 #include <vector>
+#include <box2d/b2_body.h>
 #include "entity.h"
 
 class PhysicsComponent;
@@ -12,6 +14,9 @@ public:
 	EntityManager(const EntityManager&) = delete; // copy-constructor
 	void CreateEntity(PhysicsComponent* physics, OpenGL::GraphicsComponent* graphics);
 	void CreateEntity(PhysicsComponent* physics, OpenGL::GraphicsComponent* graphics, glm::vec2 size, glm::vec2 position, float rotation);
+	void CreateEntity(PhysicsComponent* physics, OpenGL::GraphicsComponent* graphics, glm::vec2 size, glm::vec2 position, float rotation, glm::vec3 color);
+	void CreateEntity(PhysicsComponent* physics, OpenGL::GraphicsComponent* graphics, glm::vec2 size, glm::vec2 position, float rotation, glm::vec3 color, b2BodyType bodytype, float density, float friction, float restitution);
+
 	static EntityManager& Get() { 
 		static EntityManager Instance; 
 		return Instance; 

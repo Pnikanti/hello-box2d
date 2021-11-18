@@ -40,8 +40,6 @@ namespace OpenGL
 
 	void QuadComponent::Draw(Entity& entity)
 	{
-		glm::vec2 position = glm::vec2(1.0f);
-		
 		glUseProgram(shader);
 
 		glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(entity.GetPosition(), 0.0f))
@@ -51,8 +49,8 @@ namespace OpenGL
 		unsigned int modelUniform = glGetUniformLocation(shader, "model");
 		glUniformMatrix4fv(modelUniform, 1, GL_FALSE, glm::value_ptr(model));
 
-		unsigned int positionUniform = glGetUniformLocation(shader, "position");
-		glUniform2fv(positionUniform, 1, glm::value_ptr(position));
+		unsigned int colorUniform = glGetUniformLocation(shader, "color");
+		glUniform3fv(colorUniform, 1, glm::value_ptr(entity.Color));
 
 		glBindVertexArray(vertexArray);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

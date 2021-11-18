@@ -27,9 +27,6 @@ void PhysicsWorld::Update()
 }
 
 PhysicsComponent::PhysicsComponent() :
-	Position(glm::vec2(0.0f, 0.0f)),
-	Size(glm::vec2(1.0f, 1.0f)),
-	Rotation(0.0f),
 	Body(nullptr),
 	Fixture(nullptr),
 	BodyDefinition(),
@@ -39,7 +36,7 @@ PhysicsComponent::PhysicsComponent() :
 	LOGGER_TRACE("PhysicsComponent constructor called");
 }
 
-void PhysicsComponent::CreateEntity(glm::vec2 position, glm::vec2 size, float rotation)
+void PhysicsComponent::CreateEntity(Entity& entity)
 {
 	LOGGER_TRACE("CreateEntity called");
 	if (Body != nullptr)
@@ -48,45 +45,26 @@ void PhysicsComponent::CreateEntity(glm::vec2 position, glm::vec2 size, float ro
 		Body = nullptr;
 	}
 
-	Size = size;
-	Position = position;
-	Rotation = rotation; // must be passed as radians!
+	Shape.SetAsBox(entity.Size.x, entity.Size.y);
 
-	Shape.SetAsBox(Size.x, Size.y);
 	FixtureDefinition.shape = &Shape;
-	BodyDefinition.position.Set(Position.x, Position.y);
+	FixtureDefinition.density = entity.Density;
+	FixtureDefinition.friction = entity.Friction;
+	FixtureDefinition.restitution = entity.Restitution;
+
+	BodyDefinition.type = entity.BodyType;
+	BodyDefinition.position.Set(entity.Position.x, entity.Position.y);
 
 	Body = PhysicsWorld::World->CreateBody(&BodyDefinition);
-	Body->SetTransform(Body->GetPosition(), Rotation);
+	Body->SetTransform(Body->GetPosition(), glm::radians(entity.Rotation));
 	Fixture = Body->CreateFixture(&FixtureDefinition);
 }
 
-glm::vec2 PhysicsComponent::GetPosition()
-{
-	return Position;
-}
-
-float PhysicsComponent::GetRotationRadians()
-{
-	return Rotation;
-}
-
-float PhysicsComponent::GetRotationDegrees()
-{
-	return glm::degrees(Rotation);
-}
-
-glm::vec2 PhysicsComponent::GetSize()
-{
-	return Size;
-}
-
-void PhysicsComponent::Update() {}
+void PhysicsComponent::Update(Entity& entity) {}
 
 PhysicsStaticComponent::PhysicsStaticComponent()
 {
 	LOGGER_TRACE("PhysicsStaticComponent constructor called");
-	FixtureDefinition.density = 0.0f;
 }
 
 PhysicsStaticComponent::~PhysicsStaticComponent()
@@ -104,10 +82,6 @@ PhysicsStaticComponent::~PhysicsStaticComponent()
 PhysicsDynamicComponent::PhysicsDynamicComponent()
 {
 	LOGGER_TRACE("PhysicsDynamicComponent constructor called");
-	BodyDefinition.type = b2_dynamicBody;
-	FixtureDefinition.density = 1.0f;
-	FixtureDefinition.friction = 0.2f;
-	FixtureDefinition.restitution = 0.3f;
 }
 
 PhysicsDynamicComponent::~PhysicsDynamicComponent()
@@ -122,9 +96,9 @@ PhysicsDynamicComponent::~PhysicsDynamicComponent()
 	Fixture = nullptr;
 }
 
-void PhysicsDynamicComponent::Update()
+void PhysicsDynamicComponent::Update(Entity& entity)
 {
 	b2Vec2 position = Body->GetPosition();
-	Position = glm::vec2(position.x, position.y);
-	Rotation = Body->GetAngle();
+	entity.Position = glm::vec2(position.x, position.y);
+	entity.Rotation = glm::degrees(Body->GetAngle());
 }

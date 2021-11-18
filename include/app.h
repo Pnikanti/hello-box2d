@@ -8,7 +8,7 @@ class PhysicsWorld;
 
 class Application {
 public:
-	Application();
+	Application(int width, int height);
 	~Application();
 	void Start();
 	void Loop();
@@ -19,8 +19,5 @@ public:
 	static float TimeStep;
 private:
 	OpenGL::Context* Context;
-	OrthographicCamera* Camera;
 	PhysicsWorld* Physics;
-private:
-	OrthographicCamera* CreateCamera(float width, float height);
 };

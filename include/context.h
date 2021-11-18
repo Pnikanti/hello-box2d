@@ -12,10 +12,9 @@ namespace OpenGL {
 	public:
 		Context(int width, int height, const char* windowName);
 		~Context();
+		void Start();
 		void RenderOneFrame();
 		void AddShader(std::string& shaderName, std::string& vertexShader, std::string& fragmentShader);
-		void UpdateViewProjectionMatrix(OrthographicCamera* camera);
-		void UpdateUniformResolution();
 	public:
 		static GLFWwindow* Window;
 		bool Alive;
@@ -26,10 +25,13 @@ namespace OpenGL {
 		static std::unordered_map<std::string, unsigned int> Shaders;
 	private:
 		static void FrameBufferSizeCb(GLFWwindow* window, int width, int height);
+		static OrthographicCamera* CreateCamera(float width, float height);
+		static void UpdateViewProjectionMatrix(OrthographicCamera* camera);
 		void RenderGui();
 		void UpdateAllRenderTargets();
 	private:
+		static OrthographicCamera* Camera;
 		static Gui* GuiContext;
-		glm::mat4 viewProjectionMatrix;
+		static glm::mat4 viewProjectionMatrix;
 	};
 }

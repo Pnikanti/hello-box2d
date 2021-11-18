@@ -3,23 +3,73 @@
 #include "log.h"
 #include "physics.h"
 
+/* Entity handles rotation in degrees. When radians are used
+(mainly in graphics and physics components) they are converted expliticly.
+I.e. Entity takes rotation in degrees and passes it to needed components as radians.
+*/
+
 Entity::Entity(PhysicsComponent* physicsComponent, OpenGL::GraphicsComponent* graphicsComponent) :
 	input(nullptr),
 	graphics(graphicsComponent),
-	physics(physicsComponent)
+	physics(physicsComponent),
+	Position(glm::vec2(0.0f)),
+	Size(glm::vec2(1.0f)),
+	Rotation(0.0f),
+	Color(glm::vec3(1.0f, 1.0f, 0.1f))
 {
 	LOGGER_TRACE("Entity constructor called");
-	physics->CreateEntity(glm::vec2(0.0f), glm::vec2(1.0f), 0.0f);
+	physics->CreateEntity(*this);
 }
 Entity::Entity(PhysicsComponent* physicsComponent, OpenGL::GraphicsComponent* graphicsComponent, glm::vec2 position, glm::vec2 size, float rotation) :
 	input(nullptr),
 	graphics(graphicsComponent),
-	physics(physicsComponent)
+	physics(physicsComponent),
+	Position(position),
+	Size(size),
+	Rotation(rotation),
+	Color(glm::vec3(1.0f, 1.0f, 0.1f)),
+	BodyType(b2_staticBody),
+	Density(1.0f),
+	Friction(0.4f),
+	Restitution(0.4f)
 {
-	LOGGER_TRACE("Entity constructor2 called");
-	physics->CreateEntity(position, size, glm::radians(rotation));
+	LOGGER_TRACE("Entity overloaded constructor called");
+	physics->CreateEntity(*this);
 }
 
+Entity::Entity(PhysicsComponent* physicsComponent, OpenGL::GraphicsComponent* graphicsComponent, glm::vec2 position, glm::vec2 size, float rotation, glm::vec3 color) :
+	input(nullptr),
+	graphics(graphicsComponent),
+	physics(physicsComponent),
+	Position(position),
+	Size(size),
+	Rotation(rotation),
+	Color(color),
+	BodyType(b2_staticBody),
+	Density(1.0f),
+	Friction(0.4f),
+	Restitution(0.4f)
+{
+	LOGGER_TRACE("Entity overloaded constructor called");
+	physics->CreateEntity(*this);
+}
+
+Entity::Entity(PhysicsComponent* physicsComponent, OpenGL::GraphicsComponent* graphicsComponent, glm::vec2 position, glm::vec2 size, float rotation, glm::vec3 color, b2BodyType bodytype, float density, float friction, float restitution) :
+	input(nullptr),
+	graphics(graphicsComponent),
+	physics(physicsComponent),
+	Position(position),
+	Size(size),
+	Rotation(rotation),
+	Color(color),
+	BodyType(bodytype),
+	Density(density),
+	Friction(friction),
+	Restitution(restitution)
+{
+	LOGGER_TRACE("Entity overloaded constructor called");
+	physics->CreateEntity(*this);
+}
 Entity::~Entity()
 {
 	LOGGER_TRACE("Entity destructor called");
@@ -29,19 +79,35 @@ Entity::~Entity()
 	physics = nullptr;
 }
 
-glm::vec2 Entity::GetSize() { return physics->GetSize() * 2.0f; }
-glm::vec2 Entity::GetPosition() { return physics->GetPosition(); }
-float Entity::GetRotationDegrees() { return physics->GetRotationDegrees(); }
-float Entity::GetRotationRadians() { return physics->GetRotationRadians(); }
+glm::vec2 Entity::GetSize() { return Size * 2.0f; }
+glm::vec2 Entity::GetPosition() { return Position; }
+float Entity::GetRotationDegrees() { return Rotation; }
+float Entity::GetRotationRadians() { return glm::radians(Rotation); }
 
 void Entity::SetAttributes(glm::vec2 position, glm::vec2 size, float rotation)
 {
-	physics->CreateEntity(position, size, glm::radians(rotation));
+	Position = position;
+	Size = size;
+	Rotation = rotation;
+	physics->CreateEntity(*this);
+}
+
+void Entity::SetAttributes(glm::vec2 position, glm::vec2 size, float rotation, glm::vec3 color, b2BodyType bodytype, float density, float friction, float restitution)
+{
+	Position = position;
+	Size = size;
+	Rotation = rotation;
+	BodyType = bodytype;
+	Density = density;
+	Friction = friction;
+	Restitution = restitution;
+
+	physics->CreateEntity(*this);
 }
 
 void Entity::Advance()
 {
-	physics->Update();
+	physics->Update(*this);
 }
 
 void Entity::Draw()

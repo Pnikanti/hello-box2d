@@ -1,5 +1,6 @@
 #include <glfw/glfw3.h>
 #include <string.h>
+#include <box2d/b2_body.h>
 #include "context.h"
 #include "gui.h"
 #include "app.h"
@@ -13,19 +14,17 @@
 std::vector<OpenGL::GuiContext*> Application::GuiContexts(std::vector<OpenGL::GuiContext*>(2));
 float Application::TimeStep = 1.0f / 60.0f;
 
-Application::Application() :
+Application::Application(int width, int height) :
 	Context(nullptr)
 {
 	Logger::Init("Hello-Box2D");
 	EntityManager::Init(20);
-	Context = new OpenGL::Context(800, 600, "Application");
 	CreateDebugGui();
 	CreateApplicationGui();
-	Context->AddShader(std::string("BasicShader"), std::string("res/shaders/vertex.shader"), std::string("res/shaders/fragment.shader"));
-	Camera = CreateCamera(800, 600);
-	Context->UpdateViewProjectionMatrix(Camera);
-	Context->UpdateUniformResolution();
 	Physics = new PhysicsWorld();
+	Context = new OpenGL::Context(width, height, "Application");
+	Context->AddShader(std::string("BasicShader"), std::string("res/shaders/vertex.shader"), std::string("res/shaders/fragment.shader"));
+	Context->Start();
 }
 
 Application::~Application()
@@ -45,19 +44,15 @@ void Application::Start()
 	EntityManager::Get().CreateEntity(
 		new PhysicsStaticComponent(),
 		new OpenGL::QuadComponent(),
-		glm::vec2(0.0f, -10.0f),
 		glm::vec2(10.0f, 0.25f),
+		glm::vec2(0.0f, -10.0f),
+		0.0f,
+		glm::vec3(255.0f, 255.0f, 0.0f),
+		b2_staticBody,
+		1.0f,
+		1.0f,
 		0.0f
 	);
-
-	EntityManager::Get().CreateEntity(
-		new PhysicsDynamicComponent(),
-		new OpenGL::QuadComponent(),
-		glm::vec2(0.0f, 10.0f),
-		glm::vec2(0.5f, 0.5f),
-		30.0f
-	);
-
 	Loop();
 }
 
@@ -100,27 +95,9 @@ void Application::CreateApplicationGui()
 
 }
 
-OrthographicCamera* Application::CreateCamera(float width, float height)
-{
-	float aspectRatio = width / height;
-	float cameraDimensions = 20.0f;
-	float bottom = -cameraDimensions;
-	float top = cameraDimensions;
-	float left = bottom * aspectRatio;
-	float right = top * aspectRatio;
-
-	LOGGER_TRACE("aspectRatio: {0}", aspectRatio);
-	LOGGER_TRACE("bottom: {0}", bottom);
-	LOGGER_TRACE("top: {0}", top);
-	LOGGER_TRACE("left: {0}", left);
-	LOGGER_TRACE("right: {0}", right);
-
-	return new OrthographicCamera(left, right, bottom, top);
-}
-
 int main()
 {
-	auto x = Application();
+	auto x = Application(1200, 800);
 	x.Start();
 
 	return 0;

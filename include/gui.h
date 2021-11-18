@@ -40,5 +40,12 @@ namespace OpenGL {
 		GraphicsComponent* y;
 		Entity* e;
 		bool visible;
+		float fCurrentColor[3] = { 255.0f, 255.0f, 0.0f };
+		float fSize = 0.5f;
+		float fDensity = 0.5f;
+		float fFriction = 0.5f;
+		float fRestitution = 0.5f;
+		float fRotation = 30.0f;
+
 	};
 }

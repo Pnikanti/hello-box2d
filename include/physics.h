@@ -23,16 +23,9 @@ class PhysicsComponent {
 public:
 	PhysicsComponent();
 	virtual ~PhysicsComponent() = default;
-	void CreateEntity(glm::vec2 position, glm::vec2 size, float rotation);
-	glm::vec2 GetPosition();
-	glm::vec2 GetSize();
-	float GetRotationRadians();
-	float GetRotationDegrees();
-	virtual void Update();
+	void CreateEntity(Entity& entity);
+	virtual void Update(Entity& entity);
 public:
-	glm::vec2 Size;
-	glm::vec2 Position;
-	float Rotation;
 	b2Body* Body;
 	b2Fixture* Fixture;
 	b2BodyDef BodyDefinition;
@@ -50,5 +43,5 @@ class PhysicsDynamicComponent : public PhysicsComponent {
 public:
 	PhysicsDynamicComponent();
 	~PhysicsDynamicComponent();
-	void Update() override;
+	void Update(Entity& entity) override;
 };

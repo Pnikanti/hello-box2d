@@ -28,6 +28,8 @@ namespace OpenGL {
 	unsigned int Context::FreedMemory = 0;
 	unsigned int Context::SCR_WIDTH = 800;
 	unsigned int Context::SCR_HEIGHT = 600;
+	glm::mat4 Context::viewProjectionMatrix = glm::mat4(0.0f);
+	OrthographicCamera* Context::Camera = nullptr;
 	GLFWwindow* Context::Window = nullptr;
 	Gui* Context::GuiContext = nullptr;
 	std::unordered_map<std::string, unsigned int> Context::Shaders = std::unordered_map<std::string, unsigned int>();
@@ -35,6 +37,9 @@ namespace OpenGL {
 	Context::Context(int width, int height, const char* windowName)
 		: Alive(1)
 	{
+		SCR_WIDTH = width;
+		SCR_HEIGHT = height;
+
 		glfwInit();
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -59,8 +64,9 @@ namespace OpenGL {
 			LOGGER_ERROR("Glew error: {0}", glewGetErrorString(glewInitialized));
 		}
 
-		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 		glfwSwapInterval(1); // Enable vsync
+		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+
 		GuiContext = new Gui();
 		LOGGER_INFO("Context initialized!");
 	}
@@ -75,6 +81,15 @@ namespace OpenGL {
 	{
 		SCR_WIDTH = width;
 		SCR_HEIGHT = height;
+
+		if (Camera != nullptr)
+		{
+			delete Camera;
+			Camera = nullptr;
+		}
+
+		Camera = CreateCamera((float)SCR_WIDTH, (float)SCR_HEIGHT);
+		UpdateViewProjectionMatrix(Camera);
 		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 	}
 
@@ -98,20 +113,17 @@ namespace OpenGL {
 		Shaders[shaderName] = ShaderHandler::Create(source.VertexSource, source.FragmentSource);
 	}
 
-	void Context::UpdateUniformResolution()
+	void Context::Start()
 	{
-		glm::vec2 resolution = glm::vec2(SCR_WIDTH, SCR_HEIGHT);
-
-		for (auto i : Shaders)
+		if (Camera != nullptr)
 		{
-			glUseProgram(i.second);
-			unsigned int resolutionUniform = glGetUniformLocation(i.second, "resolution");
-			if (resolutionUniform)
-			{
-				LOGGER_TRACE("Setting resolution: {0} to resolutionUniform", glm::to_string(resolution));
-				glUniform2fv(resolutionUniform, 1, glm::value_ptr(resolution));
-			}
+			delete Camera;
+			Camera = nullptr;
 		}
+
+		Camera = CreateCamera((float)SCR_WIDTH, (float)SCR_HEIGHT);
+		UpdateViewProjectionMatrix(Camera);
+		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 	}
 
 	void Context::UpdateViewProjectionMatrix(OrthographicCamera* camera)
@@ -134,6 +146,24 @@ namespace OpenGL {
 			if (i != nullptr)
 				i->Draw();
 		}
+	}
+
+	OrthographicCamera* Context::CreateCamera(float width, float height)
+	{
+		float aspectRatio = width / height;
+		float cameraDimensions = 20.0f;
+		float bottom = -cameraDimensions;
+		float top = cameraDimensions;
+		float left = bottom * aspectRatio;
+		float right = top * aspectRatio;
+
+		LOGGER_TRACE("aspectRatio: {0}", aspectRatio);
+		LOGGER_TRACE("bottom: {0}", bottom);
+		LOGGER_TRACE("top: {0}", top);
+		LOGGER_TRACE("left: {0}", left);
+		LOGGER_TRACE("right: {0}", right);
+
+		return new OrthographicCamera(left, right, bottom, top);
 	}
 
 	void Context::RenderOneFrame()
