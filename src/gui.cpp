@@ -64,8 +64,8 @@ namespace OpenGL {
 	}
 
 	void DebugGuiContext::Update() {
-		ImGui::SetNextWindowPos(ImVec2(0, 0)); // top-left
-		ImGui::SetNextWindowSize(ImVec2(800, 200));
+		ImGui::SetNextWindowPos(ImVec2(Context::SCR_WIDTH - 350, 0)); // top-left
+		ImGui::SetNextWindowSize(ImVec2(350, 200));
 		ImGui::Begin("Debug", &visible, wFlags);
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 		ImGui::Text("Total Allocated (bytes): %u", Context::AllocatedMemory);
@@ -77,14 +77,14 @@ namespace OpenGL {
 
 	void ApplicationGuiContext::Update() {
 
-		ImGui::SetNextWindowPos(ImVec2(Context::SCR_WIDTH - 300, 0)); // top-right
-		ImGui::SetNextWindowSize(ImVec2(300, 400));
-		ImGui::Begin("Box Mods", &visible, wFlags);
-		LOGGER_INFO("Picker colors: r: {0} g: {1}, b: {2}", fCurrentColor[0], fCurrentColor[1], fCurrentColor[2]);
+		ImGui::SetNextWindowPos(ImVec2(0, 0)); // top-right
+		ImGui::SetNextWindowSize(ImVec2(300, 300));
+		ImGui::Begin("Color", &visible, wFlags);
+		LOGGER_INFO("Color Picker: r: {0} g: {1}, b: {2}", fCurrentColor[0], fCurrentColor[1], fCurrentColor[2]);
 		ImGui::ColorPicker3("Color Picker", &fCurrentColor[0], 0);
 		ImGui::End();
 
-		ImGui::SetNextWindowPos(ImVec2(Context::SCR_WIDTH - 100, Context::SCR_HEIGHT - 200)); // top-right
+		ImGui::SetNextWindowPos(ImVec2(0, 500)); // top-right
 		ImGui::SetNextWindowSize(ImVec2(100, 200));
 		ImGui::Begin("Control Panel", &visible, wFlags);
 		if (ImGui::Button("Spawn Box", ImVec2(75, 50)))
@@ -117,7 +117,7 @@ namespace OpenGL {
 		}
 		ImGui::End();
 
-		ImGui::SetNextWindowPos(ImVec2(Context::SCR_WIDTH - 200, Context::SCR_HEIGHT - 400)); // top-right
+		ImGui::SetNextWindowPos(ImVec2(0, 300)); // top-right
 		ImGui::SetNextWindowSize(ImVec2(200, 200));
 		ImGui::Begin("Sliders", &visible, wFlags);
 		ImGui::SliderFloat("Size", &fSize, 0.1f, 5.0f);
