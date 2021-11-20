@@ -1,5 +1,5 @@
 ﻿cmake_minimum_required (VERSION 3.8)
-project (hello-box2d VERSION 0.1)
+project (hello-box2d VERSION 0.4)
 
 set(SOURCES
 	 ${PROJECT_SOURCE_DIR}/src/context.cpp
@@ -85,6 +85,13 @@ file(COPY res DESTINATION ${CMAKE_BINARY_DIR})
 add_executable (${PROJECT_NAME} ${SOURCES} ${IMGUI_SOURCES} ${BOX2D_SOURCES})
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
 add_definitions(-DGLEW_STATIC)
+
+if(${CMAKE_BUILD_TYPE} STREQUAL Debug)
+	add_definitions(-DDEBUG)
+else()
+	set_target_properties(${PROJECT_NAME} PROPERTIES 
+    LINK_FLAGS "/ENTRY:mainCRTStartup /SUBSYSTEM:WINDOWS")
+endif()
 
 target_include_directories(${PROJECT_NAME}
 	PUBLIC ${OPENGL_INCLUDE_DIRS}

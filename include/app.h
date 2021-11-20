@@ -8,7 +8,7 @@ class PhysicsWorld;
 
 class Application {
 public:
-	Application(int width, int height);
+	Application(const char* appName, int width, int height);
 	~Application();
 	void Start();
 	void Loop();

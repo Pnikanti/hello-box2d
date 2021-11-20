@@ -1,6 +1,6 @@
 #include <glfw/glfw3.h>
-#include <string.h>
 #include <box2d/b2_body.h>
+#include <string.h>
 #include "context.h"
 #include "gui.h"
 #include "app.h"
@@ -14,15 +14,15 @@
 std::vector<OpenGL::GuiContext*> Application::GuiContexts(std::vector<OpenGL::GuiContext*>(2));
 float Application::TimeStep = 1.0f / 60.0f;
 
-Application::Application(int width, int height) :
+Application::Application(const char* appName, int width, int height) :
 	Context(nullptr)
 {
-	Logger::Init("Hello-Box2D");
+	Logger::Init(appName);
 	EntityManager::Init(20);
 	CreateDebugGui();
 	CreateApplicationGui();
 	Physics = new PhysicsWorld();
-	Context = new OpenGL::Context(width, height, "Application");
+	Context = new OpenGL::Context(width, height, appName);
 	Context->AddShader(std::string("BasicShader"), std::string("res/shaders/vertex.shader"), std::string("res/shaders/fragment.shader"));
 	Context->Start();
 }
@@ -109,7 +109,7 @@ void Application::CreateApplicationGui()
 
 int main()
 {
-	auto x = Application(1200, 800);
+	auto x = Application("Hello-Box2D-v04", 1200, 800);
 	x.Start();
 
 	return 0;
