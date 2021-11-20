@@ -12,6 +12,7 @@ public:
 	~Application();
 	void Start();
 	void Loop();
+	void UpdateAllEntities();
 	void CreateDebugGui();
 	void CreateApplicationGui();
 public:

@@ -36,9 +36,7 @@ namespace OpenGL {
 		void Update() override;
 	public:
 		ImGuiWindowFlags wFlags;
-		PhysicsComponent* x;
-		GraphicsComponent* y;
-		Entity* e;
+		ImGuiWindowFlags wBackgroundFlags;
 		bool visible;
 		float fCurrentColor[3] = { 255.0f, 255.0f, 0.0f };
 		float fSize = 0.5f;

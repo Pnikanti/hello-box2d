@@ -15,7 +15,11 @@ Entity::Entity(PhysicsComponent* physicsComponent, OpenGL::GraphicsComponent* gr
 	Position(glm::vec2(0.0f)),
 	Size(glm::vec2(1.0f)),
 	Rotation(0.0f),
-	Color(glm::vec3(1.0f, 1.0f, 0.1f))
+	Color(glm::vec3(1.0f, 1.0f, 0.1f)),
+	BodyType(b2_staticBody),
+	Density(1.0f),
+	Friction(0.4f),
+	Restitution(0.4f)
 {
 	LOGGER_TRACE("Entity constructor called");
 	physics->CreateEntity(*this);

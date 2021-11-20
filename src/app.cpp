@@ -71,21 +71,26 @@ void Application::Loop()
 		while (lag >= TimeStep)
 		{
 			Physics->Update();
-			for (auto i = EntityManager::GetEntities().begin(); i != EntityManager::GetEntities().end(); i++)
-			{
-				if ((*i) != nullptr)
-					(*i)->Advance();
-
-				if ((*i)->Position.y < -50.0f)
-				{
-					delete (*i);
-					(*i) = nullptr;
-					EntityManager::GetEntities().erase(i--);
-				}
-			}
+			UpdateAllEntities();
 			lag -= TimeStep;
 		}
 		Context->RenderOneFrame();
+	}
+}
+
+void Application::UpdateAllEntities()
+{
+	for (auto i = EntityManager::GetEntities().begin(); i != EntityManager::GetEntities().end(); i++)
+	{
+		if ((*i) != nullptr)
+			(*i)->Advance();
+
+		if ((*i)->Position.y < -50.0f)
+		{
+			delete (*i);
+			(*i) = nullptr;
+			EntityManager::GetEntities().erase(i--);
+		}
 	}
 }
 
